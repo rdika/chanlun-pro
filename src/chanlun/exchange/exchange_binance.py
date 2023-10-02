@@ -1,7 +1,6 @@
 import traceback
 
 import ccxt
-import deprecation
 import pymysql.err
 import pytz
 from tenacity import retry, stop_after_attempt, wait_random, retry_if_result
@@ -74,7 +73,8 @@ class ExchangeBinance(Exchange):
         markets = self.exchange.load_markets()
         for _, s in markets.items():
             if s['quote'] == 'USDT':
-                g_all_stocks.append({'code': s['base'] + '/' + s['quote'], 'name': s['base'] + '/' + s['quote']})
+                g_all_stocks.append(
+                    {'code': s['base'] + '/' + s['quote'], 'name': s['base'] + '/' + s['quote']})
         return g_all_stocks
 
     @retry(stop=stop_after_attempt(3), wait=wait_random(min=1, max=5), retry=retry_if_result(lambda _r: _r is None))
@@ -94,21 +94,27 @@ class ExchangeBinance(Exchange):
             return self.online_klines(code, frequency, start_date, end_date, args)
         try:
             if start_date is not None or end_date is not None:
-                online_klines = self.online_klines(code, frequency, start_date, end_date, args)
+                online_klines = self.online_klines(
+                    code, frequency, start_date, end_date, args)
                 self.db_exchange.insert_klines(code, frequency, online_klines)
                 return online_klines
 
-            db_klines = self.db_exchange.klines(code, frequency, args={'limit': 10000})
+            db_klines = self.db_exchange.klines(
+                code, frequency, args={'limit': 10000})
             if len(db_klines) == 0:
-                online_klines = self.online_klines(code, frequency, start_date, end_date, args)
+                online_klines = self.online_klines(
+                    code, frequency, start_date, end_date, args)
                 self.db_exchange.insert_klines(code, frequency, online_klines)
                 return online_klines
 
-            last_datetime = db_klines.iloc[-1]['date'].strftime('%Y-%m-%d %H:%M:%S')
-            online_klines = self.online_klines(code, frequency, start_date=last_datetime)
+            last_datetime = db_klines.iloc[-1]['date'].strftime(
+                '%Y-%m-%d %H:%M:%S')
+            online_klines = self.online_klines(
+                code, frequency, start_date=last_datetime)
             self.db_exchange.insert_klines(code, frequency, online_klines)
             if len(online_klines) == 1500:
-                online_klines = self.online_klines(code, frequency, start_date, end_date, args)
+                online_klines = self.online_klines(
+                    code, frequency, start_date, end_date, args)
                 self.db_exchange.insert_klines(code, frequency, online_klines)
                 return online_klines
 
@@ -147,14 +153,17 @@ class ExchangeBinance(Exchange):
 
         kline = self.exchange.fetch_ohlcv(symbol=code, timeframe=frequency_map[frequency], limit=1500,
                                           params={'startTime': start_date, 'endTime': end_date})
-        kline_pd = pd.DataFrame(kline, columns=['date', 'open', 'high', 'low', 'close', 'volume'])
+        kline_pd = pd.DataFrame(
+            kline, columns=['date', 'open', 'high', 'low', 'close', 'volume'])
         # kline_pd.loc[:, 'code'] = code
         # kline_pd.loc[:, 'date'] = kline_pd['date'].apply(lambda x: datetime.datetime.fromtimestamp(x / 1e3))
         kline_pd['code'] = code
         kline_pd['date'] = kline_pd['date'].apply(
-            lambda x: datetime.datetime.fromtimestamp(x / 1e3).astimezone(self.tz)
+            lambda x: datetime.datetime.fromtimestamp(
+                x / 1e3).astimezone(self.tz)
         )
-        kline_pd = kline_pd[['code', 'date', 'open', 'close', 'high', 'low', 'volume']]
+        kline_pd = kline_pd[['code', 'date', 'open',
+                             'close', 'high', 'low', 'volume']]
         # 自定义级别，需要进行转换
         if frequency in ['10m', '3m', '2m'] and len(kline_pd) > 0:
             kline_pd = convert_currency_kline_frequency(kline_pd, frequency)
@@ -180,7 +189,8 @@ class ExchangeBinance(Exchange):
         :return:
         """
         tickers = self.exchange.fapiPublicGetTicker24hr()
-        tickers = sorted(tickers, key=lambda d: float(d['quoteVolume']), reverse=True)
+        tickers = sorted(tickers, key=lambda d: float(
+            d['quoteVolume']), reverse=True)
         codes = []
         for t in tickers:
             if t['symbol'][-4:] == 'USDT':
@@ -206,11 +216,13 @@ class ExchangeBinance(Exchange):
 
     def positions(self, code: str = ''):
         try:
-            position = self.exchange.fetch_positions(symbols=[code] if code != '' else None)
+            position = self.exchange.fetch_positions(
+                symbols=[code] if code != '' else None)
         except Exception as e:
             if 'precision' in str(e):
                 self.__init__()
-                position = self.exchange.fetch_positions(symbols=[code] if code != '' else None)
+                position = self.exchange.fetch_positions(
+                    symbols=[code] if code != '' else None)
             else:
                 raise e
         """

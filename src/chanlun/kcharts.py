@@ -302,82 +302,6 @@ def render_charts(title, cl_data: ICL, to_frequency: str = None, orders=None, co
     for _zs in line_qsd_zss:
         _zs[0] = datetime_convert_frequency(_zs[0], target_dates)
 
-    # 画最后一笔中枢
-    line_last_bi_zs = []
-    # if last_bi_zs is not None:
-    #     start_index = last_bi_zs.start.k.date
-    #     end_index = last_bi_zs.end.k.date
-    #     line_last_bi_zs = [
-    #         [start_index, start_index, end_index, end_index, start_index],
-    #         [last_bi_zs.zg, last_bi_zs.zd, last_bi_zs.zd, last_bi_zs.zg, last_bi_zs.zg],
-    #         color_last_bi_zs,
-    #         last_bi_zs.level + 1,
-    #         last_bi_zs.done
-    #     ]
-    # 画最后一线段中枢
-    line_last_xd_zs = []
-    # if last_xd_zs is not None:
-    #     start_index = last_xd_zs.start.k.date
-    #     end_index = last_xd_zs.end.k.date
-    #     line_last_xd_zs = [
-    #         [start_index, start_index, end_index, end_index, start_index],
-    #         [last_xd_zs.zg, last_xd_zs.zd, last_xd_zs.zd, last_xd_zs.zg, last_xd_zs.zg],
-    #         color_last_xd_zs,
-    #         last_xd_zs.level + 1,
-    #         last_xd_zs.done
-    #     ]
-
-    # 画 走势段 中枢
-    line_zslx_zss = []
-    for zs in zslx_zss:
-        if config['show_zslx_zs'] is False:
-            break
-        if zs.real is False:
-            continue
-        start_index = zs.start.k.date
-        end_index = zs.end.k.date
-        l_zs = [
-            # 两竖，两横，5个点，转一圈
-            [start_index, start_index, end_index, end_index, start_index],
-            [zs.zg, zs.zd, zs.zd, zs.zg, zs.zg],
-        ]
-        if zs.type == 'up':
-            l_zs.append(color_zslx_zs)
-        elif zs.type == 'down':
-            l_zs.append(color_zslx_zs)
-        else:
-            l_zs.append(color_zslx_zs)
-
-        l_zs.append(zs.level + 1)
-        l_zs.append(zs.done)
-
-        line_zslx_zss.append(l_zs)
-
-    # 画最后一笔中枢
-    line_last_bi_zs = []
-    if last_bi_zs is not None:
-        start_index = last_bi_zs.start.k.date
-        end_index = last_bi_zs.end.k.date
-        line_last_bi_zs = [
-            [start_index, start_index, end_index, end_index, start_index],
-            [last_bi_zs.zg, last_bi_zs.zd, last_bi_zs.zd, last_bi_zs.zg, last_bi_zs.zg],
-            color_last_bi_zs,
-            last_bi_zs.level + 1,
-            last_bi_zs.done
-        ]
-    # 画最后一线段中枢
-    line_last_xd_zs = []
-    if last_xd_zs is not None:
-        start_index = last_xd_zs.start.k.date
-        end_index = last_xd_zs.end.k.date
-        line_last_xd_zs = [
-            [start_index, start_index, end_index, end_index, start_index],
-            [last_xd_zs.zg, last_xd_zs.zd, last_xd_zs.zd, last_xd_zs.zg, last_xd_zs.zg],
-            color_last_xd_zs,
-            last_xd_zs.level + 1,
-            last_xd_zs.done
-        ]
-
     # 分型中的 背驰 和 买卖点信息，归类，一起显示
     fx_bcs_mmds = {}
     for _bi in bis:
@@ -885,23 +809,6 @@ def render_charts(title, cl_data: ICL, to_frequency: str = None, orders=None, co
                 tooltip_opts=opts.TooltipOpts(is_show=False),
             )
         ))
-
-    # 画最后一笔、线段中枢
-    # if len(line_last_bi_zs) > 0:
-    #     overlap_kline = overlap_kline.overlap(
-    #         (
-    #             Line().add_xaxis(line_last_bi_zs[0]).add_yaxis(
-    #                 "笔中枢",
-    #                 line_last_bi_zs[1],
-    #                 symbol=None,
-    #                 label_opts=opts.LabelOpts(is_show=False),
-    #                 linestyle_opts=opts.LineStyleOpts(width=line_last_bi_zs[3], color=line_last_bi_zs[2],
-    #                                                   type_='solid' if line_last_bi_zs[4] else 'dashed'),
-    #                 # areastyle_opts=opts.AreaStyleOpts(opacity=0.2, color=line_last_bi_zs[2]),
-    #                 tooltip_opts=opts.TooltipOpts(is_show=False),
-    #             )
-    #         )
-    #     )
 
     # 展示背驰
     overlap_kline = overlap_kline.overlap((
