@@ -909,7 +909,7 @@ class BackTest:
                 height="10%", width="96%", pos_left='1%', pos_right='3%', pos_bottom='0%'
             ),
         )
-        if "JPY_PARENT_PID" in os.environ:
+        if "JPY_PARENT_PID" in os.environ.keys() or 'VSCODE_CWD' in os.environ.keys():
             return chart.render_notebook()
         else:
             return chart.dump_options()

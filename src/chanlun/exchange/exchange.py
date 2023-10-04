@@ -251,7 +251,7 @@ def convert_currency_kline_frequency(klines: pd.DataFrame, to_f: str) -> pd.Data
     数字货币k线转换方法
     """
     period_maps = {
-        '2m': '2min', '3m': '3min',
+        '2m': '2min', '3m': '3min', '8m': '8min',
         '5m': '5min', '10m': '10min', '15m': '15min', '30m': '30min', '60m': '1H',
         '120m': '2H', '4h': '4H',
         'd': 'D', 'w': 'W', 'm': 'M'

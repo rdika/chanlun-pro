@@ -1218,7 +1218,7 @@ def render_charts(title, cl_data: ICL, to_frequency: str = None, orders=None, co
     if config['to_file'] != '':
         return grid_chart.render(config['to_file'])
 
-    if "JPY_PARENT_PID" in os.environ:
+    if "JPY_PARENT_PID" in os.environ.keys() or 'VSCODE_CWD' in os.environ.keys():
         return grid_chart.render_notebook()
     else:
         return grid_chart.dump_options()

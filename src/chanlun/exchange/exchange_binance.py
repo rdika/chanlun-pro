@@ -274,5 +274,5 @@ class ExchangeBinance(Exchange):
 if __name__ == '__main__':
     ex = ExchangeBinance()
 
-    klines = ex.klines('BTC/USDT', '5m')
+    klines = ex.klines('BTC/USDT', '30m')
     print(klines.tail())

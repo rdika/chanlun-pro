@@ -56,6 +56,7 @@ class BackTestKlines(MarketDatas):
         self.load_data_to_cache = True
         self.load_kline_nums = 10000  # 每次重新加载的K线数量
         self.cl_data_kline_max_nums = 50000  # 缠论数据中最大保存的k线数量
+        self.del_volume_zero = False # 是否删除成交量为 0 的K线数据
 
         # 保存k线数据
         self.all_klines: Dict[str, pd.DataFrame] = {}
@@ -221,6 +222,8 @@ class BackTestKlines(MarketDatas):
                     kline = self.all_klines[key][self.all_klines[key]['date'] < self.now_date][-self.load_kline_nums::]
                 else:
                     kline = self.all_klines[key][self.all_klines[key]['date'] <= self.now_date][-self.load_kline_nums::]
+                if self.del_volume_zero and len(kline) > 0:
+                    kline = kline[kline['volume'] != 0]
                 klines[_f] = kline
         else:
             # 使用数据库按需查询
@@ -228,6 +231,8 @@ class BackTestKlines(MarketDatas):
                 klines[_f] = self.ex.klines(
                     code, _f, end_date=fun.datetime_to_str(self.now_date), args={'limit': 10000}
                 )
+                if self.del_volume_zero and len(klines[_f]) > 0:
+                    klines[_f] = klines[_f][klines[_f]['volume'] != 0]
                 klines[_f].sort_values('date', inplace=True)
 
         self._use_times['klines'] += time.time() - _time

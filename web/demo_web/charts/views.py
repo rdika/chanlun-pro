@@ -7,7 +7,6 @@ from django.shortcuts import render
 from chanlun import kcharts
 from chanlun.cl_utils import web_batch_get_cl_datas
 from chanlun.exchange import exchange_tdx
-from chanlun.cl_utils import batch_cls
 from chanlun.exchange import exchange_tdx
 
 g_code = 'SH.000001'

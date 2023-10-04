@@ -1,4 +1,3 @@
-from chanlun.cl_utils import batch_cls
 from .apps import login_required
 from django.http import HttpResponse
 from django.shortcuts import render
