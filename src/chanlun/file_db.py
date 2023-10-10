@@ -142,15 +142,22 @@ class FileCacheDB(object):
                     # 判断缓存中的数据，与给定的K线数据是否有差异，有则表示数据有变（比如复权会产生变化），则重新全量计算
                     if len(cd.get_src_klines()) >= 2 and len(klines) >= 2:
                         cd_pre_kline = cd.get_src_klines()[-2]
-                        src_klines = [_k for _, _k in klines.iterrows() if _k['date'] == cd_pre_kline.date]
+                        src_klines = klines[klines['date'] == cd_pre_kline.date]
                         # 计算后的数据没有最开始的日期或者 开高低收其中有不同的，则重新计算
-                        if len(src_klines) == 0 or Decimal(src_klines[0]['close']) != Decimal(cd_pre_kline.c) or \
-                                Decimal(src_klines[0]['high']) != Decimal(cd_pre_kline.h) or \
-                                Decimal(src_klines[0]['low']) != Decimal(cd_pre_kline.l) or \
-                                Decimal(src_klines[0]['open']) != Decimal(cd_pre_kline.o) or \
-                                Decimal(src_klines[0]['volume']) != Decimal(cd_pre_kline.a):
+                        if len(src_klines) == 0 or Decimal(src_klines.iloc[0]['close']) != Decimal(cd_pre_kline.c) or \
+                                Decimal(src_klines.iloc[0]['high']) != Decimal(cd_pre_kline.h) or \
+                                Decimal(src_klines.iloc[0]['low']) != Decimal(cd_pre_kline.l) or \
+                                Decimal(src_klines.iloc[0]['open']) != Decimal(cd_pre_kline.o) or \
+                                Decimal(src_klines.iloc[0]['volume']) != Decimal(cd_pre_kline.a):
                             print(f'{market}--{code}--{frequency} {key} 计算前的数据有差异，重新计算')
                             # print(cd_pre_kline, src_klines)
+                            cd = cl.CL(code, frequency, cl_config)
+                    # 判断缓存中的最近一百根时间范围内的数量是否一致
+                    if len(cd.get_src_klines()) >= 100 and len(klines) >= 100:
+                        _valid_cd_klines = cd.get_src_klines()[-100:]
+                        _valid_src_klines = klines[(klines['date'] >= _valid_cd_klines[0].date) & (klines['date'] <= _valid_cd_klines[-1].date)]
+                        if len(_valid_cd_klines) != len(_valid_src_klines):
+                            print(f'{market}--{code}--{frequency} {key} 计算后的缠论数据有丢失数据 [{len(_valid_cd_klines)} - {len(_valid_src_klines)}]，重新计算')
                             cd = cl.CL(code, frequency, cl_config)
             except Exception as e:
                 if file_pathname.is_file():
