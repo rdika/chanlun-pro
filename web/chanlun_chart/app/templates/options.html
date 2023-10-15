@@ -57,6 +57,7 @@
             </label>
         </div>
     </div>
+    
     <div class="layui-form-item">
         <label class="layui-form-label">分型区域高低</label>
         <div class="layui-input-block layui-row" style="display: flex;">
@@ -271,6 +272,7 @@
     </div>
     <hr class="layui-border-orange">
     <h4>缠论高级配置</h4>
+
     <div class="layui-form-item">
         <label class="layui-form-label">低转高级别</label>
         <div class="layui-input-block"
@@ -547,6 +549,27 @@
                         {% if chart_show_qsd_bc == '1' %} checked {% endif %}
                        name="chart_show_qsd_bc" title="趋势段背驰"/>
             </div>
+
+            <div class="layui-col-xs3">
+                <input type="checkbox" value="1" lay-filter="cl_config"
+                        {% if chart_show_fx == '1' %} checked {% endif %}
+                       name="chart_show_fx" title="分型"/>
+            </div>
+        </div>
+    </div>
+
+    <hr class="layui-border-orange"/>
+    <h4>个人定制，不特殊说明，不明白使用默认配置即可</h4>
+    <div class="layui-form-item">
+        <label class="layui-form-label">K线缺口</label>
+        <div class="layui-input-block" title="K线缺口处理方式">
+            <label for="kline_qk">
+                <select type="select" name="kline_qk" lay-filter="cl_config">
+                    <option value="none" {% if kline_qk == 'none' %} selected {% endif %}>默认方式
+                    </option>
+                    <option value="ck" {% if kline_qk == 'ck' %} selected {% endif %}>缠论K线缺口</option>
+                </select>
+            </label>
         </div>
     </div>
     <div class="layui-form-item">

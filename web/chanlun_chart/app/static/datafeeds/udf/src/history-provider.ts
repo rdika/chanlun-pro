@@ -12,6 +12,7 @@ interface HistoryPartialDataResponse extends UdfOkResponse {
     h?: never;
     l?: never;
     v?: never;
+    fxs?: any;
     bis?: any;
     xds?: any;
     zsds?: any;
@@ -29,6 +30,7 @@ interface HistoryFullDataResponse extends UdfOkResponse {
     h: any;
     l: any;
     v: any;
+    fxs: any;
     bis: any;
     xds: any;
     zsds: any;
@@ -52,6 +54,7 @@ export type PeriodParamsWithOptionalCountback = Omit<PeriodParams, 'countBack'> 
 export interface GetBarsResult {
     bars: Bar[];
     meta: HistoryMetadata;
+    fxs: any;
     bis: any;
     xds: any;
     zsds: any;
@@ -222,6 +225,7 @@ export class HistoryProvider {
             noData: false,
         };
 
+        let fxs: any = [];
         let bis: any = [];
         let xds: any = [];
         let zsds: any = [];
@@ -234,6 +238,7 @@ export class HistoryProvider {
         let result = {
             bars: bars,
             meta: meta,
+            fxs: fxs,
             bis: bis,
             xds: xds,
             zsds: zsds,
@@ -251,6 +256,7 @@ export class HistoryProvider {
             const volumePresent = response.v !== undefined;
             const ohlPresent = response.o !== undefined;
 
+            fxs = response.fxs;
             bis = response.bis;
             xds = response.xds;
             zsds = response.zsds;
@@ -284,6 +290,7 @@ export class HistoryProvider {
             let result = {
                 bars: bars,
                 meta: meta,
+                fxs: fxs,
                 bis: bis,
                 xds: xds,
                 zsds: zsds,

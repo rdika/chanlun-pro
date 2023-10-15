@@ -349,6 +349,7 @@ def create_app(test_config=None):
             'h': cl_chart_data['h'],
             'l': cl_chart_data['l'],
             'v': cl_chart_data['v'],
+            'fxs': cl_chart_data['fxs'],
             'bis': cl_chart_data['bis'],
             'xds': cl_chart_data['xds'],
             'zsds': cl_chart_data['zsds'],
@@ -557,7 +558,7 @@ def create_app(test_config=None):
 
         keys = [
             'config_use_type',
-            'kline_type',
+            'kline_type', 'kline_qk',
             'fx_qj', 'fx_bh', 'bi_type', 'bi_bzh', 'bi_qj', 'bi_fx_cgd',
             'xd_qj', 'zsd_qj', 'zs_bi_type', 'zs_xd_type', 'zs_qj', 'zs_wzgx',
             'idx_macd_fast', 'idx_macd_slow', 'idx_macd_signal',
@@ -571,6 +572,7 @@ def create_app(test_config=None):
             'chart_show_bi_zs', 'chart_show_xd_zs', 'chart_show_zsd_zs', 'chart_show_qsd_zs',
             'chart_show_bi_mmd', 'chart_show_xd_mmd', 'chart_show_zsd_mmd', 'chart_show_qsd_mmd',
             'chart_show_bi_bc', 'chart_show_xd_bc', 'chart_show_zsd_bc', 'chart_show_qsd_bc',
+            'chart_show_fx',
         ]
         cl_config = {}
         for _k in keys:

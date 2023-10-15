@@ -437,18 +437,18 @@ def render_charts(title, cl_data: ICL, to_frequency: str = None, orders=None, co
         dts = pd.Series(klines_xaxis)
         for o in orders:
             if type(o['datetime']) is str:
-                odt = str_to_datetime(o['datetime'])
+                odt = str_to_datetime(o['datetime'], tz=cl_data.get_src_klines()[-1].date.tzinfo)
             else:
-                odt = str_to_datetime(datetime_to_str(o['datetime']))  # 这样转换后，加了个时区
-            k_dt = dts[dts <= odt]
+                odt = str_to_datetime(datetime_to_str(o['datetime']), tz=cl_data.get_src_klines()[-1].date.tzinfo)  # 这样转换后，加了个时区
+            k_dt = dts[dts >= odt]
             if len(k_dt) == 0:
                 continue
             if o['type'] in ['buy', 'open_long', 'close_short']:
-                scatter_buy_orders['i'].append(k_dt.iloc[-1])
+                scatter_buy_orders['i'].append(k_dt.iloc[0])
                 scatter_buy_orders['val'].append([o['price'],
                                                   f"{order_type_maps[o['type']]}[{o['price']}/{o['amount']}]:{'' if 'info' not in o else o['info']}"])
             elif o['type'] in ['sell', 'close_long', 'open_short']:
-                scatter_sell_orders['i'].append(k_dt.iloc[-1])
+                scatter_sell_orders['i'].append(k_dt.iloc[0])
                 scatter_sell_orders['val'].append([o['price'],
                                                    f"{order_type_maps[o['type']]}[{o['price']}/{o['amount']}]:{'' if 'info' not in o else o['info']}"])
 

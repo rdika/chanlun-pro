@@ -1,157 +1,198 @@
-<!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="zh">
-<head>
-
+  <head>
     <title>缠论解盘 - TradingView Chart</title>
 
-    <link rel="shortcut icon" href="{{ url_for('static', filename='favicon.ico') }}">
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/layui.css') }}"/>
+    <link
+      rel="shortcut icon"
+      href="{{ url_for('static', filename='favicon.ico') }}" />
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='css/layui.css') }}" />
 
-    <script type="text/javascript" src="{{ url_for('static', filename='jquery-3.7.0.min.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='layui.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='xm-select.js') }}"></script>
-    <script type="text/javascript"
-            src="{{ url_for('static', filename='charting_library/charting_library.standalone.js') }}"></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='datafeeds/udf/dist/bundle.js') }}"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='jquery-3.7.0.min.js') }}"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='layui.js') }}"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='xm-select.js') }}"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='charting_library/charting_library.standalone.js') }}"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='datafeeds/udf/dist/bundle.js') }}"></script>
     <script type="text/javascript">
-        (function () {
-            if (window.JSON && window.JSON.parse) {
-                var c = document.getElementsByTagName("head"), a = document.createElement("link");
-                try {
-                    var b = JSON.parse(localStorage.tv_chart)
-                } catch (d) {
-                    b = {}
-                }
-                "dark" === b.theme && (a.href = "{{ url_for('static', filename='css/layui-theme-dark.css') }}", a.rel = "stylesheet", a.id = "layuicss-theme-dark", c[0].appendChild(a))
-            }
-        })();
+      (function () {
+        if (window.JSON && window.JSON.parse) {
+          var c = document.getElementsByTagName("head"),
+            a = document.createElement("link");
+          try {
+            var b = JSON.parse(localStorage.tv_chart);
+          } catch (d) {
+            b = {};
+          }
+          "dark" === b.theme &&
+            ((a.href =
+              "{{ url_for('static', filename='css/layui-theme-dark.css') }}"),
+            (a.rel = "stylesheet"),
+            (a.id = "layuicss-theme-dark"),
+            c[0].appendChild(a));
+        }
+      })();
 
-        var _hmt = _hmt || [];
-        (function () {
-            var hm = document.createElement("script");
-            hm.src = "https://hm.baidu.com/hm.js?e832d45f5217b78a3a6475109ea2d771";
-            var s = document.getElementsByTagName("script")[0];
-            s.parentNode.insertBefore(hm, s);
-        })();
+      var _hmt = _hmt || [];
+      (function () {
+        var hm = document.createElement("script");
+        hm.src = "https://hm.baidu.com/hm.js?e832d45f5217b78a3a6475109ea2d771";
+        var s = document.getElementsByTagName("script")[0];
+        s.parentNode.insertBefore(hm, s);
+      })();
     </script>
 
     <style>
-        .layui-card-body p, li {
-            color: #999;
-        }
+      .layui-card-body p,
+      li {
+        color: #999;
+      }
     </style>
-</head>
+  </head>
 
-<body>
-
-<div class="layui-fluid" style="padding: 0;">
-    <div class="layui-row">
-        <div class="layui-col-xs10 layui-col-sm10 layui-col-md10"
-             style="display: flex; flex-direction: column; height: 100vh;">
-            {# 图表内容 #}
-            <div id="tv_chart_container_1" style="flex:0.5;">
-
-            </div>
-            <div id="tv_chart_container_2" style="flex:0.5;">
-
-            </div>
+  <body>
+    <div class="layui-fluid" style="padding: 0">
+      <div class="layui-row">
+        <div
+          class="layui-col-xs10 layui-col-sm10 layui-col-md10"
+          style="display: flex; flex-direction: column; height: 100vh">
+          {# 图表内容 #}
+          <div id="tv_chart_container_1" style="flex: 0.5"></div>
+          <div id="tv_chart_container_2" style="flex: 0.5"></div>
         </div>
-        <div class="layui-col-xs2 layui-col-sm2 layui-col-md2"
-             style="position: fixed;top:0;bottom: 0;right: 0;overflow: scroll;padding:0;margin:0;">
-            <div style="padding: 10px;">
-                <div class="layui-inline" style="width: 100%;">
-                    <h2 style="float: left; margin-top: 9px;">缠论解盘</h2>
-                    <div id="toggle-menu" style="float: right; margin-top: 10px; cursor: pointer;">
-                        <div>
-                            <i class="layui-icon layui-icon-shrink-right"></i>
-                        </div>
-                    </div>
+        <div
+          class="layui-col-xs2 layui-col-sm2 layui-col-md2"
+          style="
+            position: fixed;
+            top: 0;
+            bottom: 0;
+            right: 0;
+            overflow: scroll;
+            padding: 0;
+            margin: 0;
+          ">
+          <div style="padding: 10px">
+            <div class="layui-inline" style="width: 100%">
+              <h2 style="float: left; margin-top: 9px">缠论解盘</h2>
+              <div
+                id="toggle-menu"
+                style="float: right; margin-top: 10px; cursor: pointer">
+                <div>
+                  <i class="layui-icon layui-icon-shrink-right"></i>
                 </div>
-                <hr class="layui-border-green">
-                <form class="layui-form layui-form-pane" lay-filter="select_market_form">
-                    <div class="layui-form-item">
-                        <div class="layui-input-block" style="margin: 0; padding: 0;">
-                            <label>
-                                <select name="market" lay-filter="select_market">
-                                    <option value="a">沪深A股</option>
-                                    <option value="hk">港股</option>
-                                    <option value="futures">期货</option>
-                                    <option value="us">美股</option>
-                                    <option value="currency">数字货币</option>
-                                </select>
-                            </label>
-                        </div>
+              </div>
+            </div>
+            <hr class="layui-border-green" />
+            <form
+              class="layui-form layui-form-pane"
+              lay-filter="select_market_form">
+              <div class="layui-form-item">
+                <div class="layui-input-block" style="margin: 0; padding: 0">
+                  <label>
+                    <select name="market" lay-filter="select_market">
+                      <option value="a">沪深A股</option>
+                      <option value="hk">港股</option>
+                      <option value="futures">期货</option>
+                      <option value="us">美股</option>
+                      <option value="currency">数字货币</option>
+                    </select>
+                  </label>
+                </div>
+              </div>
+              <div class="layui-form-item">
+                <div id="code_search" class="xm-select-demo"></div>
+              </div>
+            </form>
+          </div>
+          <div class="layui-collapse lay-accordion" lay-filter="collapse-opts">
+            <div class="layui-colla-item">
+              {# 自选内容 #}
+              <div class="layui-colla-title" data-ca-title="自选组">自选组</div>
+              <div class="layui-colla-content layui-show" style="padding: 0">
+                <form class="layui-form" style="width: 100%">
+                  <div class="layui-form-item">
+                    <div class="layui-inline">
+                      <div
+                        class="layui-input-inline layui-input-wrap"
+                        style="width: 60%; float: left">
+                        <label for="zixuan_groups">
+                          <select
+                            id="zixuan_groups"
+                            name="zixuan_groups"
+                            lay-filter="select_zx_group"></select>
+                        </label>
+                      </div>
+                      <div
+                        class="layui-form-mid"
+                        style="padding: 4px 0 !important; float: left">
+                        <button
+                          type="button"
+                          id="add_zixuan"
+                          class="layui-btn layui-btn-primary layui-border-green layui-btn-sm">
+                          <i class="layui-icon layui-icon-add-1"></i> 自选
+                        </button>
+                      </div>
+                      <div
+                        class="layui-form-mid"
+                        style="padding: 4px 0 !important; float: left">
+                        <button
+                          type="button"
+                          id="refresh_zixuan"
+                          class="layui-btn layui-btn-primary layui-border-green layui-btn-sm">
+                          <i class="layui-icon layui-icon-refresh"></i>
+                        </button>
+                      </div>
                     </div>
-                    <div class="layui-form-item">
-                        <div id="code_search" class="xm-select-demo"></div>
-                    </div>
+                  </div>
                 </form>
+                <table class="layui-hide" id="table_zixuan_list"></table>
+                <hr class="layui-border-green" />
+              </div>
             </div>
-            <div class="layui-collapse lay-accordion" lay-filter="collapse-opts">
-                <div class="layui-colla-item">
-                    {# 自选内容 #}
-                    <div class="layui-colla-title" data-ca-title="自选组">自选组</div>
-                    <div class="layui-colla-content layui-show" style="padding: 0;">
-                        <form class="layui-form" style="width: 100%;">
-                            <div class="layui-form-item">
-                                <div class="layui-inline">
-                                    <div class="layui-input-inline layui-input-wrap" style="width: 60%; float:left;">
-                                        <label for="zixuan_groups">
-                                            <select id="zixuan_groups" name="zixuan_groups"
-                                                    lay-filter="select_zx_group">
-                                            </select>
-                                        </label>
-                                    </div>
-                                    <div class="layui-form-mid"
-                                         style="padding: 4px 0!important; float: left;">
-                                        <button type="button" id="add_zixuan"
-                                                class="layui-btn layui-btn-primary layui-border-green layui-btn-sm">
-                                            <i class="layui-icon layui-icon-add-1"></i> 自选
-                                        </button>
-                                    </div>
-                                    <div class="layui-form-mid"
-                                         style="padding: 4px 0!important; float: left">
-                                        <button type="button" id="refresh_zixuan"
-                                                class="layui-btn layui-btn-primary layui-border-green layui-btn-sm">
-                                            <i class="layui-icon layui-icon-refresh"></i>
-                                        </button>
-                                    </div>
-                                </div>
-                            </div>
-
-                        </form>
-                        <table class="layui-hide" id="table_zixuan_list"></table>
-                        <hr class="layui-border-green">
-                    </div>
+            <div class="layui-colla-item">
+              {# 提醒内容 #}
+              <div class="layui-colla-title" data-ca-title="警报提醒">
+                警报提醒
+              </div>
+              <div class="layui-colla-content" style="padding: 0">
+                <div class="layui-card">
+                  <div class="layui-card-header">警报列表</div>
+                  <div class="layui-card-body">
+                    <table
+                      class="layui-hide"
+                      id="table_alerts"
+                      lay-filter="table_alerts"></table>
+                  </div>
                 </div>
-                <div class="layui-colla-item">
-                    {# 提醒内容 #}
-                    <div class="layui-colla-title" data-ca-title="警报提醒">警报提醒</div>
-                    <div class="layui-colla-content" style="padding: 0;">
-                        <div class="layui-card">
-                            <div class="layui-card-header">警报列表</div>
-                            <div class="layui-card-body">
-                                <table class="layui-hide" id="table_alerts" lay-filter="table_alerts"></table>
-                            </div>
-                        </div>
-                        <div class="layui-card">
-                            <div class="layui-card-header">警报记录</div>
-                            <div class="layui-card-body">
-                                <table class="layui-hide" id="table_alert_reocrds"
-                                       lay-filter="table_alert_reocrds"></table>
-                            </div>
-                        </div>
-                        <hr class="layui-border-green">
-                    </div>
+                <div class="layui-card">
+                  <div class="layui-card-header">警报记录</div>
+                  <div class="layui-card-body">
+                    <table
+                      class="layui-hide"
+                      id="table_alert_reocrds"
+                      lay-filter="table_alert_reocrds"></table>
+                  </div>
                 </div>
+                <hr class="layui-border-green" />
+              </div>
             </div>
+          </div>
         </div>
+      </div>
     </div>
-</div>
-
-
-</body>
-<script>
+  </body>
+  <script>
     // 定时更新tick涨跌幅的对象
     var interval_update_rates;
     var interval_get_alert_records;
@@ -207,6 +248,7 @@
         // 图表展示
         function show_tv_chart(id) {
             var widget, udf_datafeed;
+            var obj_fxs = [];
             var obj_bis = [];
             var obj_xds = [];
             var obj_zsds = [];
@@ -481,6 +523,9 @@
                     }
                     console.log('删除图表，重新画图，可见范围：' + from + ':' + to);
 
+                    obj_fxs.forEach(function (id) {
+                        chart.removeEntity(id)
+                    });
                     obj_bis.forEach(function (id) {
                         chart.removeEntity(id)
                     });
@@ -505,19 +550,54 @@
                     obj_mmds.forEach(function (id) {
                         chart.removeEntity(id)
                     });
-                    obj_bis = []
-                    obj_xds = []
-                    obj_zsds = []
-                    obj_bi_zss = []
-                    obj_xd_zss = []
-                    obj_zsd_zss = []
-                    obj_bcs = []
-                    obj_mmds = []
+                    obj_fxs = [];
+                    obj_bis = [];
+                    obj_xds = [];
+                    obj_zsds = [];
+                    obj_bi_zss = [];
+                    obj_xd_zss = [];
+                    obj_zsd_zss = [];
+                    obj_bcs = [];
+                    obj_mmds = [];
                     let symbolInterval = widget.symbolInterval();
                     let bars_result = udf_datafeed._historyProvider.bars_result.get(symbolInterval['symbol'].toString().toLowerCase());
                     bars_result = bars_result.get(symbolInterval['interval'].toString().toLowerCase());
                     // console.log(symbolInterval);
                     // console.log(bars_result);
+                    //** 画分型
+                    bars_result.fxs.forEach(function (fx) {
+                        if (fx['points'][0].time >= from) {
+                            if (fx['text'] === 'ding') {
+                                obj_fxs.push(chart.createMultipointShape(fx['points'], {
+                                    shape: 'circle',
+                                    lock: true,
+                                    disableSelection: true,
+                                    disableSave: true,
+                                    disableUndo: true,
+                                    showInObjectsTree: false,
+                                    overrides: {
+                                        backgroundColor: '#FA8072',
+                                        color: '#FA8072',
+                                        linewidth: 4,
+                                    },
+                                }));
+                            } else {
+                                obj_fxs.push(chart.createMultipointShape(fx['points'], {
+                                    shape: 'circle',
+                                    lock: true,
+                                    disableSelection: true,
+                                    disableSave: true,
+                                    disableUndo: true,
+                                    showInObjectsTree: false,
+                                    overrides: {
+                                        backgroundColor: '#1E90FF',
+                                        color: '#1E90FF',
+                                        linewidth: 4,
+                                    },
+                                }));
+                            }
+                        }
+                    }); //**/
                     // 画笔
                     bars_result.bis.forEach(function (bi) {
                         if (bi['points'][0].time >= from) {
@@ -1301,6 +1381,5 @@
         init_web();
         interval_update_rates = setInterval(stocks_update_rate, 30000);
     });
-</script>
-
+  </script>
 </html>

@@ -88,6 +88,13 @@ class BackTestTrader(object):
             'up_pz_bc_sell': {'win_num': 0, 'loss_num': 0, 'win_balance': 0, 'loss_balance': 0},
             'up_qs_bc_sell': {'win_num': 0, 'loss_num': 0, 'win_balance': 0, 'loss_balance': 0},
         }
+        
+        # 记录持仓盈亏、资金历史的格式化日期形式
+        self.record_dt_format = '%Y-%m-%d %H:%M:%S'
+        
+        # 在执行策略前，手动指定执行的开始时间
+        self.begin_run_dt:datetime.datetime = None
+
 
     def set_strategy(self, _strategy: Strategy):
         """
@@ -108,29 +115,51 @@ class BackTestTrader(object):
         将对象数据保存到 Redis 中
         """
         save_infos = {
+            'name': self.name,
+            'mode': self.mode,
+            'is_stock': self.is_stock,
+            'is_futures': self.is_futures,
+            'allow_mmds': self.allow_mmds,
+            'balance': self.balance,
+            'fee_rate': self.fee_rate,
+            'fee_total': self.fee_total,
+            'max_pos': self.max_pos,
             'positions': self.positions,
             'positions_history': self.positions_history,
             'hold_profit_history': self.hold_profit_history,
             'balance_history': self.balance_history,
             'orders': self.orders,
+            'results': self.results,
         }
-        p_obj = pickle.dumps(save_infos)
-        rd.save_byte(key, p_obj)
-        return True
+        if key is not None:
+            p_obj = pickle.dumps(save_infos)
+            rd.save_byte(key, p_obj)
+        return save_infos
 
-    def load_from_redis(self, key: str):
+    def load_from_redis(self, key: str, save_infos:dict=None):
         """
         从 Redis 中恢复之前的数据
         """
-        p_bytes = rd.get_byte(key)
-        if p_bytes is None:
-            return False
-        save_infos = pickle.loads(p_bytes)
+        if save_infos is None:
+            p_bytes = rd.get_byte(key)
+            if p_bytes is None:
+                return False
+            save_infos = pickle.loads(p_bytes)
+        self.name = save_infos['name']
+        self.mode = save_infos['mode']
+        self.is_stock = save_infos['is_stock']
+        self.is_futures = save_infos['is_stock']
+        self.allow_mmds = save_infos['allow_mmds']
+        self.balance = save_infos['balance']
+        self.fee_rate = save_infos['fee_rate']
+        self.fee_total = save_infos['fee_total']
+        self.max_pos = save_infos['max_pos']
         self.positions = save_infos['positions']
         self.positions_history = save_infos['positions_history']
         self.hold_profit_history = save_infos['hold_profit_history']
         self.balance_history = save_infos['balance_history']
         self.orders = save_infos['orders']
+        self.results = save_infos['results']
         return True
 
     def get_price(self, code):
@@ -151,6 +180,11 @@ class BackTestTrader(object):
 
     # 运行的唯一入口
     def run(self, code):
+        
+        # 如果设置开始执行时间，并且当前时间小于等于设置的时间，则不执行策略
+        if self.begin_run_dt is not None and self.begin_run_dt >= self.get_now_datetime():
+            return True
+        
         # 优先检查持仓情况
         if code in self.positions:
             for mmd in self.positions[code]:
@@ -202,7 +236,7 @@ class BackTestTrader(object):
                 total_hold_profit += (now_profit + hold_balance)
             else:
                 total_hold_profit += now_profit
-        now_datetime = self.get_now_datetime().strftime('%Y-%m-%d %H:%M:%S')
+        now_datetime = self.get_now_datetime().strftime(self.record_dt_format)
         self.balance_history[now_datetime] = total_hold_profit + self.balance
 
     def position_record(self, code: str) -> Tuple[float, float]:
@@ -266,7 +300,7 @@ class BackTestTrader(object):
                         hold_balance += lock_pos.balance
 
                 hold_balance += (pos.balance * pos.now_pos_rate)
-        self.hold_profit_history[code][self.get_now_datetime().strftime('%Y-%m-%d %H:%M:%S')] = now_profit
+        self.hold_profit_history[code][self.get_now_datetime().strftime(self.record_dt_format)] = now_profit
 
         self._use_times['position_record'] += time.time() - s_time
         return now_profit, hold_balance

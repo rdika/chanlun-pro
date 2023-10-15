@@ -118,6 +118,9 @@ class ExchangeIB(Exchange):
 
         if len(klines_df) > 0 and frequency in ['2m']:
             klines_df = convert_us_kline_frequency(klines_df, '2m')
+            
+        if len(klines_df) == 0:
+            return None
 
         klines_df['date'] = klines_df['date'].apply(self.__convert_date)
 
@@ -229,7 +232,7 @@ if __name__ == '__main__':
     # stock_info = ex.stock_info('DOCU')
     # print(stock_info)
     #
-    klines = ex.klines('META', 'd')
+    klines = ex.klines('APO', 'd')
     print(klines.tail(20))
 
     # balance = ex.balance()

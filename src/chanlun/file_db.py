@@ -44,7 +44,7 @@ class FileCacheDB(object):
 
         # 如果内部有值变动，则会重新计算
         self.config_keys = [
-            'kline_type', 'fx_qj', 'fx_bh', 'bi_type', 'bi_bzh', 'bi_qj', 'bi_fx_cgd',
+            'kline_type', 'kline_qk', 'fx_qj', 'fx_bh', 'bi_type', 'bi_bzh', 'bi_qj', 'bi_fx_cgd',
             'xd_bzh', 'xd_qj', 'zsd_bzh', 'zsd_qj', 'zs_bi_type', 'zs_xd_type', 'zs_qj', 'zs_wzgx', 'zs_optimize',
             'idx_macd_fast', 'idx_macd_slow', 'idx_macd_signal',
             'fx_qy', 'xd_zs_max_lines_split', 'allow_split_one_line_to_xd', 'allow_bi_fx_strict',
@@ -56,7 +56,7 @@ class FileCacheDB(object):
         ]
 
         # 缠论的更新时间，如果与当前保存不一致，需要清空缓存的计算结果，重新计算
-        self.cl_update_date = '2023-07-13'
+        self.cl_update_date = '2023-10-13'
         rd_cl_update_date = rd.Robj().get('__cl_update_date')
         if rd_cl_update_date != self.cl_update_date:
             rd.Robj().set('__cl_update_date', self.cl_update_date)

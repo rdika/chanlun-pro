@@ -22,6 +22,9 @@ class Config(Enum):
     KLINE_TYPE_DEFAULT = 'kline_default'  # 默认K线
     KLINE_TYPE_HEIKIN_ASHI = 'kline_heikin_ashi'  # 平均K线
     KLINE_TYPE_CHANLUN = 'kline_chanlun'  # 包含处理后的缠论K线
+    # K 线缺口定义 (个人定制，不清楚的使用默认 none 配置)
+    KLINE_QK_NONE = 'none'
+    KLINE_QK_CK = 'ck'
     # 分型配置项
     FX_QY_MIDDLE = 'fx_qy_middle'  # 分型区间所算的区域，使用分型中间的k线作为分型区间
     FX_QY_THREE = 'fx_qy_three'  # 分型区间所算的区域，使用分型三根缠论k线作为区间
@@ -143,6 +146,8 @@ class FX:
         two_k = self.klines[1]
         three_k = self.klines[2]
         if three_k is None:
+            return ld
+        if self.klines[0].k_index == -1 or self.klines[-1].k_index == -1:
             return ld
         if self.type == 'ding':
             # 第三个缠论K线要一根单阴线

@@ -263,6 +263,7 @@ def query_cl_chart_config(market: str, code: str) -> Dict[str, object]:
         'config_use_type': 'common',
         # 缠论默认配置项
         'kline_type': Config.KLINE_TYPE_DEFAULT.value,
+        'kline_qk': Config.KLINE_QK_NONE.value,
         'fx_qj': Config.FX_QJ_K.value,
         'fx_bh': Config.FX_BH_YES.value,
         'bi_type': Config.BI_TYPE_OLD.value,
@@ -566,6 +567,17 @@ def cl_data_to_tv_chart(cd: ICL, config: dict, to_frequency: str = None):
     kline_hs = klines['high'].tolist()
     kline_ls = klines['low'].tolist()
     kline_vs = klines['volume'].tolist()
+    
+    fx_data = []
+    if config['chart_show_fx'] == '1':
+        for fx in cd.get_fxs():
+            fx_data.append({
+                'points': [
+                    {'time': fun.datetime_to_int(fx.k.date), 'price': fx.val},
+                    {'time': fun.datetime_to_int(fx.k.date), 'price': fx.val}
+                ],
+                'text': fx.type
+            })
 
     bi_chart_data = []
     if config['chart_show_bi'] == '1':
@@ -705,6 +717,7 @@ def cl_data_to_tv_chart(cd: ICL, config: dict, to_frequency: str = None):
         'h': kline_hs,
         'l': kline_ls,
         'v': kline_vs,
+        'fxs': fx_data,
         'bis': bi_chart_data,
         'xds': xd_chart_data,
         'zsds': zsd_chart_data,

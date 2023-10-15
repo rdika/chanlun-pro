@@ -123,8 +123,8 @@ class BackTest:
         """
         从指定的文件中恢复回测结果
         """
-        file = open(file=_file, mode='rb')
-        config_dict = pickle.load(file)
+        with open(file=_file, mode='rb') as fp:
+            config_dict = pickle.load(fp)
         self.save_file = config_dict['save_file']
         self.mode = config_dict['mode']
         self.market = config_dict['market']
@@ -165,7 +165,7 @@ class BackTest:
         self.log.info(f'Fee Total : {self.trader.fee_total}')
         return True
 
-    def run(self, next_frequency: str = None):
+    def run(self, next_frequency: str = None, begin_start_dt:datetime.datetime = None, loop_callback_fun:object = None):
         """
         执行回测
         """
@@ -176,6 +176,11 @@ class BackTest:
 
         self.datas.load_data_to_cache = self.load_data_to_cache
         self.datas.init(self.base_code, next_frequency)
+        
+        if begin_start_dt is not None:
+            self.log.info(f'起始数据回放位置：{begin_start_dt}')
+            for _f, _dts in self.datas.loop_datetime_list.items():
+                _dts = [_d for _d in _dts if _d >= begin_start_dt]
 
         _st = time.time()
 
@@ -193,7 +198,9 @@ class BackTest:
                     self.log.info(f'执行 {code} : {self.datas.now_date} 异常')
                     self.log.info(traceback.format_exc())
                     # raise e
-
+            if loop_callback_fun:
+                loop_callback_fun(self)
+                
         # 清空持仓
         self.trader.end()
         self.trader.datas = None
