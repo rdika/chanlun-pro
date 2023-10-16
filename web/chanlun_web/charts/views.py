@@ -215,7 +215,9 @@ def cl_chart_config_save(request):
             'chart_show_ma', 'chart_show_boll',
             'chart_show_futu', 'chart_kline_nums', 'chart_show_ld',
             'chart_idx_ma_period', 'chart_idx_vol_ma_period', 'chart_idx_boll_period', 'chart_idx_rsi_period',
-            'chart_idx_atr_period', 'chart_idx_cci_period', 'chart_idx_kdj_period', 'chart_qstd']
+            'chart_idx_atr_period', 'chart_idx_cci_period', 'chart_idx_kdj_period', 'chart_qstd',
+            'kline_qk',
+            ]
     config = {}
     for _k in keys:
         if _k in ['zs_bi_type', 'zs_xd_type']:
