@@ -145,21 +145,24 @@ class BackTestTrader(object):
             if p_bytes is None:
                 return False
             save_infos = pickle.loads(p_bytes)
-        self.name = save_infos['name']
-        self.mode = save_infos['mode']
-        self.is_stock = save_infos['is_stock']
-        self.is_futures = save_infos['is_stock']
-        self.allow_mmds = save_infos['allow_mmds']
-        self.balance = save_infos['balance']
-        self.fee_rate = save_infos['fee_rate']
-        self.fee_total = save_infos['fee_total']
-        self.max_pos = save_infos['max_pos']
+        if 'name' in save_infos.keys():
+            self.name = save_infos['name']
+            self.mode = save_infos['mode']
+            self.is_stock = save_infos['is_stock']
+            self.is_futures = save_infos['is_stock']
+            self.allow_mmds = save_infos['allow_mmds']
+            self.balance = save_infos['balance']
+            self.fee_rate = save_infos['fee_rate']
+            self.fee_total = save_infos['fee_total']
+            self.max_pos = save_infos['max_pos']
+            self.results = save_infos['results']
+            
         self.positions = save_infos['positions']
         self.positions_history = save_infos['positions_history']
         self.hold_profit_history = save_infos['hold_profit_history']
         self.balance_history = save_infos['balance_history']
         self.orders = save_infos['orders']
-        self.results = save_infos['results']
+        
         return True
 
     def get_price(self, code):
