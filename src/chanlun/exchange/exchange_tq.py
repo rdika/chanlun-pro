@@ -31,9 +31,6 @@ class ExchangeTq(Exchange):
         # 设置时区
         self.tz = pytz.timezone('Asia/Shanghai')
 
-        # 设置时区
-        self.tz = pytz.timezone('Asia/Shanghai')
-
     def default_code(self):
         return 'KQ.m@SHFE.rb'
 
@@ -117,22 +114,25 @@ class ExchangeTq(Exchange):
         if args is None:
             args = {}
         if 'limit' not in args.keys():
-            args['limit'] = 5000
+            args['limit'] = 8000
         frequency_maps = {
             'w': 7 * 24 * 60 * 60, 'd': 24 * 60 * 60, '120m': 2 * 60 * 60, '60m': 60 * 60, '30m': 30 * 60,
             '15m': 15 * 60,
             '10m': 10 * 60, '6m': 6 * 60, '5m': 5 * 60, '3m': 3 * 60, '2m': 2 * 60, '1m': 1 * 60,
             '30s': 30, '10s': 10
         }
-        if start_date is not None and end_date is not None:
-            raise Exception('期货行情不支持历史数据查询，因为账号不是专业版，没权限')
+        # if start_date is not None and end_date is not None:
+        #     raise Exception('期货行情不支持历史数据查询，因为账号不是专业版，没权限')
 
         # 获取返回的K线
         ks = None
         try_nums = 3
         for i in range(try_nums):
             try:
-                ks = self.get_api().get_kline_serial(code, frequency_maps[frequency], args['limit'])
+                if start_date is not None or end_date is not None:
+                    ks = self.get_api().get_kline_data_series(code, frequency_maps[frequency], start_date, end_date)
+                else:
+                    ks = self.get_api().get_kline_serial(code, frequency_maps[frequency], args['limit'])
                 self.t_wait()
                 if ks is not None and len(ks) > 0:
                     break
@@ -156,42 +156,6 @@ class ExchangeTq(Exchange):
             if frequency in ['w', 'd']:
                 # 天勤数据是前对其的，将所有日期以上周期的时间设置为 9点
                 ks['date'] = ks['date'].apply(lambda _d: _d.replace(hour=9, minute=0))
-
-        return ks[['code', 'date', 'open', 'close', 'high', 'low', 'volume']]
-
-    def _extracted_from_klines_9(self, start_date, end_date, code, frequency, limit=2000):
-        g_look.acquire()
-        frequency_maps = {'w': 7 * 24 * 60 * 60, 'd': 24 * 60 * 60, '60m': 60 * 60, '30m': 30 * 60, '15m': 15 * 60,
-                          '5m': 5 * 60, '1m': 1 * 60, '30s': 30, '10s': 10}
-
-        if start_date is not None and end_date is not None:
-            raise Exception('期货行情不支持历史数据查询，因为账号不是专业版，没权限')
-
-        # 添加命令
-        kline_key = f'{code}_{frequency_maps[frequency]}'
-        self.command_tasks.append(f'kline:{code}:{frequency_maps[frequency]}')
-        # 获取返回的K线
-        klines = None
-        try_nums = 5
-        for i in range(try_nums):
-            try:
-                ks = self.get_api().get_kline_serial(code, frequency_maps[frequency], args['limit'])
-                self.t_wait()
-                if ks is not None and len(ks) > 0:
-                    break
-            except Exception as e:
-                self.log.error(f'{code} - {frequency} error : {e} 再次重试')
-                time.sleep(1)
-
-        if ks is None:
-            return None
-        ks = ks.dropna()
-        if len(ks) == 0:
-            return None
-
-        klines.loc[:, 'date'] = klines['datetime'].apply(lambda x: datetime.datetime.fromtimestamp(x / 1e9))
-        klines['date'] = klines['date'].dt.tz_localize(self.tz)
-        klines.loc[:, 'code'] = code
 
         return ks[['code', 'date', 'open', 'close', 'high', 'low', 'volume']]
 
@@ -416,13 +380,21 @@ class ExchangeTq(Exchange):
 
 
 if __name__ == '__main__':
+    from chanlun import fun
     ex = ExchangeTq()
+    
+    # print(ex.all_stocks())
+    
+    # main_codes = ex.get_api().query_cont_quotes()
+    # print(main_codes)
 
-    # klines = ex.klines('CZCE.RI401', 'd')
-    #
-    # print(klines.tail(20))
+    klines = ex.klines('KQ.m@SHFE.ss', '1m')
 
-    tick = ex.ticks(['DCE.l2401'])
-    print(tick)
+    klines = klines[klines['date'] <= '2023-10-16 15:00:00']
+    
+    print(len(klines), klines.tail(20))
+
+    # tick = ex.ticks(['DCE.l2401'])
+    # print(tick)
 
     # ex.close_api()
